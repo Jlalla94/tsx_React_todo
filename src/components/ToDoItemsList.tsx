@@ -2,22 +2,38 @@ import React, { useState } from "react";
 import { ToDoToggeAll } from "./ToDoToggeAll";
 import { ToDoFooter } from "./ToDoFooter";
 import { ToDoItem } from "./ToDoItem";
+import { ToDoItemInerface } from "../interfaces/ToDoItemInterface";
 import { ToDoItemsColectionInterface } from "../interfaces/ToDoItemsColectionInterface";
+import { FilterInterface } from "../interfaces/FilterInterface";
 
 export const ToDoItemsList: React.FC<ToDoItemsColectionInterface> = ({
   toDoItemCollection,
   onToggle,
-  onDelete
+  onDelete,
+  chengeToDoItemText
 }: ToDoItemsColectionInterface) => {
   const [hash, setHash] = useState<string>(
     window.location.hash.replace("#/", "")
   );
+  const filters = [
+    { key: 1, href: "#/", text: "All" },
+    { key: 2, href: "#/active", text: "Active" },
+    { key: 3, href: "#/completed", text: "Completed" }
+  ];
 
   window.addEventListener("hashchange", () => {
-    setHash(window.location.hash.replace("#/", ""));
+    if (
+      filters.find((item: FilterInterface) => {
+        return (
+          item.href.replace("#/", "") === window.location.hash.replace("#/", "")
+        );
+      }) !== undefined
+    ) {
+      setHash(window.location.hash.replace("#/", ""));
+    }
   });
 
-  if (toDoItemCollection.length === 0) {
+  if (!toDoItemCollection.length) {
     return <></>;
   }
 
@@ -26,60 +42,46 @@ export const ToDoItemsList: React.FC<ToDoItemsColectionInterface> = ({
   let countDesible: number = 0;
 
   let deleteAllComplited = () => {
-    toDoItemCollection.map(toDoItem => {
+    toDoItemCollection.map((toDoItem: ToDoItemInerface) => {
       toDoItem.complited && onDelete(toDoItem.id);
+      return toDoItem;
     });
   };
 
   let checkAll = (state: boolean) => {
-    toDoItemCollection.map(toDoItem => {
+    toDoItemCollection.map((toDoItem: ToDoItemInerface) => {
       toDoItem.complited === state && onToggle(toDoItem.id);
+      return toDoItem;
     });
   };
 
-  toDoItemCollection.map(toDoItem => {
-    toDoItem.complited ? countDesible++ : countActive++;
-  });
+  toDoItemCollection.map((toDoItem: ToDoItemInerface) =>
+    toDoItem.complited ? countDesible++ : countActive++
+  );
 
   return (
     <>
       <ToDoToggeAll activeItems={countActive} checkAllItems={checkAll} />
       <ul className="todo-list">
         {toDoItemCollection.map(toDoItem => {
-          if (hash !== "") {
-            if (hash === "active" && toDoItem.complited === false) {
-              return (
-                <ToDoItem
-                  key={toDoItem.id}
-                  toDoItem={toDoItem}
-                  onDelete={() => onDelete(toDoItem.id)}
-                  onToggle={() => onToggle(toDoItem.id)}
-                />
-              );
-            } else if (hash === "completed" && toDoItem.complited === true) {
-              return (
-                <ToDoItem
-                  key={toDoItem.id}
-                  toDoItem={toDoItem}
-                  onDelete={() => onDelete(toDoItem.id)}
-                  onToggle={() => onToggle(toDoItem.id)}
-                />
-              );
-            }
-          } else {
-            return (
+          return (
+            (!hash ||
+              (hash === "active" && !toDoItem.complited) ||
+              (hash === "completed" && toDoItem.complited)) && (
               <ToDoItem
                 key={toDoItem.id}
                 toDoItem={toDoItem}
                 onDelete={() => onDelete(toDoItem.id)}
                 onToggle={() => onToggle(toDoItem.id)}
+                onDubbleClick={chengeToDoItemText}
               />
-            );
-          }
+            )
+          );
         })}
       </ul>
       <ToDoFooter
         hash={"#/" + hash}
+        filters={filters}
         activeItems={countActive}
         disableItems={countDesible}
         onDeleteAll={deleteAllComplited}

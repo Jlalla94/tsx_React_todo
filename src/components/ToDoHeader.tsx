@@ -1,6 +1,10 @@
 import React, { useState } from "react";
+
+interface ToDoText {
+  title: string;
+}
 interface ToDoItemProps {
-  onAdd(title: string): void;
+  onAdd({ title }: ToDoText): void;
 }
 export const ToDoHeader: React.FC<ToDoItemProps> = (props: ToDoItemProps) => {
   const [title, setTitle] = useState<string>("");
@@ -22,7 +26,7 @@ export const ToDoHeader: React.FC<ToDoItemProps> = (props: ToDoItemProps) => {
   const filterInputData = (inputData: string) => {
     if (inputData.replace(/\s/g, "") !== "") {
       setTitle("");
-      props.onAdd(inputData.replace(/\s/g, " "));
+      props.onAdd({ title: inputData.replace(/\s/g, " ").trim() });
     }
   };
   return (

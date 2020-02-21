@@ -1,22 +1,19 @@
 import React from "react";
+import { FilterInterface } from "../interfaces/FilterInterface";
 
 interface ToDoFiltersProps {
   hash: string;
+  filters: FilterInterface[];
 }
 export const ToDoFilters: React.FC<ToDoFiltersProps> = ({
-  hash
+  hash,
+  filters
 }: ToDoFiltersProps) => {
-  const filters = [
-    { href: "#/", className: "", text: "All" },
-    { href: "#/active", className: "", text: "Active" },
-    { href: "#/completed", className: "", text: "Completed" }
-  ];
-
   return (
     <ul className="filters">
       {filters.map(filterItem => {
         return (
-          <li>
+          <li key={filterItem.key}>
             <a
               href={filterItem.href}
               className={filterItem.href === hash ? "selected" : ""}

@@ -12,15 +12,19 @@ export const ToDoApp: React.FC = () => {
     localStoredgeData
   );
 
-  const createToDoItem = (title: string) => {
+  const createToDoItem = ({
+    title,
+    id: id = Date.now(),
+    complited: complited = false
+  }: ToDoItemInerface) => {
     const newToDoItem: ToDoItemInerface = {
-      id: Date.now(),
+      id: id,
       title: title,
-      complited: false
+      complited: complited
     };
     setToDoItems(prev => {
-      localStorage["toDoList"] = JSON.stringify([newToDoItem, ...prev]);
-      return [newToDoItem, ...prev];
+      localStorage["toDoList"] = JSON.stringify([...prev, newToDoItem]);
+      return [...prev, newToDoItem];
     });
   };
 
@@ -29,6 +33,19 @@ export const ToDoApp: React.FC = () => {
       let newData = prev.map(toDoItem => {
         if (toDoItem.id === id) {
           toDoItem.complited = !toDoItem.complited;
+        }
+        return toDoItem;
+      });
+      localStorage["toDoList"] = JSON.stringify(newData);
+      return newData;
+    });
+  };
+
+  const chengeToDoItemText = (id: number, title: string) => {
+    setToDoItems(prev => {
+      let newData = prev.map(toDoItem => {
+        if (toDoItem.id === id) {
+          toDoItem.title = title;
         }
         return toDoItem;
       });
@@ -50,6 +67,7 @@ export const ToDoApp: React.FC = () => {
       <ToDoHeader onAdd={createToDoItem} />
       <ToDoItemsList
         toDoItemCollection={toDoItems}
+        chengeToDoItemText={chengeToDoItemText}
         onToggle={checkToDoItemToggle}
         onDelete={deleteToDoItem}
       />

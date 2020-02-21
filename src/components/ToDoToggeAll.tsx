@@ -1,14 +1,10 @@
 import React from "react";
+import { ToDoToggeAllPropsInterface } from "../interfaces/ToDoToggeAllPropsInterface";
 
-interface ToDoToggeAllProps {
-  activeItems: number;
-  checkAllItems: (state: boolean) => void;
-}
-
-export const ToDoToggeAll: React.FC<ToDoToggeAllProps> = ({
+export const ToDoToggeAll: React.FC<ToDoToggeAllPropsInterface> = ({
   activeItems,
   checkAllItems
-}: ToDoToggeAllProps) => {
+}: ToDoToggeAllPropsInterface) => {
   return (
     <section className="main">
       <input
